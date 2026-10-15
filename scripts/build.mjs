@@ -25,7 +25,7 @@ card.siteUrl = siteUrl;
 await rm(dist, { recursive: true, force: true });
 await mkdir(resolve(dist, "wallet"), { recursive: true });
 
-for (const f of ["index.html", "card.json", "manifest.webmanifest", ".nojekyll", "favicon.svg", "css", "js", "assets"]) {
+for (const f of ["index.html", "nfc.html", "card.json", "manifest.webmanifest", ".nojekyll", "favicon.svg", "css", "js", "assets"]) {
   if (await exists(resolve(root, f))) await cp(resolve(root, f), resolve(dist, f), { recursive: true });
 }
 // Bake the resolved URL into the deployed card.json so QR codes / shares use the canonical link.
