@@ -1,0 +1,68 @@
+{
+  "slug": "emily-carter",
+  "name": "Emily Carter",
+  "pronouns": "she/her",
+  "title": "DVM Candidate, Class of 2028",
+  "headline": "Future large-animal vet with a soft spot for goats.",
+  "department": "College of Veterinary Medicine",
+  "organization": "University of Georgia",
+  "gsaRole": "Vet Med Senator",
+  "badgeLabel": "Student AVMA · Class of 2028",
+  "location": "Athens, GA",
+  "photo": "",
+  "bio": "Graduate student at the University of Georgia. Future large-animal vet with a soft spot for goats. Open to collaborations, mentoring and good conversations.",
+  "email": "yourname@uga.edu",
+  "phone": "+1 706 555 0142",
+  "website": "https://example.com",
+  "cv": "assets/cv.pdf",
+  "calendar": "https://calendar.app.google/your-booking-link",
+  "researchInterests": [
+    "Large-animal medicine",
+    "One Health",
+    "Rural practice",
+    "Parasitology"
+  ],
+  "links": [
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/",
+      "icon": "linkedin"
+    }
+  ],
+  "publications": [],
+  "projects": [],
+  "education": [
+    {
+      "degree": "DVM Candidate, Class of 2028",
+      "school": "University of Georgia",
+      "years": "2024 – present"
+    }
+  ],
+  "awards": [],
+  "officeHours": "Study group · Mon 6 pm · Vet Med Learning Center",
+  "events": [
+    {
+      "title": "SCAVMA Wet Lab",
+      "date": "Nov 12, 2026",
+      "where": "Vet Teaching Hospital"
+    }
+  ],
+  "brand": {
+    "cardName": "GSA Connect",
+    "org": "UGA Graduate Student Association",
+    "orgShort": "UGA GSA"
+  },
+  "theme": {
+    "accent": ""
+  },
+  "poweredBy": {
+    "name": "ScholarTap",
+    "url": "https://scholartap.com"
+  },
+  "siteUrl": "",
+  "wallet": {
+    "backgroundColor": "#0f8b8d",
+    "foregroundColor": "#FFFFFF",
+    "labelColor": "#9ee3e4"
+  }
+}

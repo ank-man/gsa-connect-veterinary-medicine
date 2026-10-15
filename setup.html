@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Set up your GSA Connect card</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- Local-only profile editor. Run `npm run setup`. This page is never deployed. -->
+  <style>
+    :root {
+      --accent: #BA0C2F; --accent-ink: #fff;
+      --bg: #f4f2f0; --panel: #fff; --ink: #18130f; --muted: #6d655f; --line: #e3ddd8; --field: #fbfaf9;
+      --ok: #1f7a4d; --warn: #9a5b00;
+      font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #121012; --panel: #1c191b; --ink: #f1edea; --muted: #a39b95; --line: #332e31; --field: #161315; --ok: #5bd39a; --warn: #f0b35a; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    [hidden] { display: none !important; }
+    header.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
+    header.top h1 { margin: 0; font-size: 16px; }
+    header.top .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+    .status { margin-left: auto; font-size: 13px; color: var(--muted); }
+    .status.ok { color: var(--ok); } .status.err { color: var(--accent); }
+    .layout { display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 1fr); gap: 24px; max-width: 1240px; margin: 0 auto; padding: 20px; }
+    form { display: grid; gap: 16px; }
+    fieldset { margin: 0; border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 16px 18px 18px; display: grid; gap: 12px; min-width: 0; }
+    legend { padding: 0 6px; font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+    .hint { margin: -4px 0 0; color: var(--muted); font-size: 13px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; min-width: 0; }
+    label span.opt { font-weight: 400; color: var(--muted); }
+    input, textarea, select { width: 100%; font: inherit; color: inherit; background: var(--field); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; min-height: 40px; }
+    textarea { min-height: 96px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+    input[type=color] { padding: 3px; width: 52px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 600 14px/1 inherit; font-family: inherit; padding: 10px 14px; min-height: 40px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; text-decoration: none; }
+    .btn:hover { border-color: var(--ink); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .btn.small { min-height: 32px; padding: 6px 10px; font-size: 13px; }
+    .btn.ghost { border-color: transparent; color: var(--muted); }
+
+    .media { display: grid; grid-template-columns: 112px 1fr; gap: 16px; align-items: center; }
+    .drop { width: 112px; height: 112px; border-radius: 50%; border: 2px dashed var(--line); display: grid; place-items: center; overflow: hidden; cursor: pointer; background: var(--field); color: var(--muted); font-size: 12px; text-align: center; position: relative; }
+    .drop img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .drop.over { border-color: var(--accent); }
+    .filerow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .filename { font-size: 13px; color: var(--muted); }
+
+    .rep { display: grid; gap: 10px; }
+    .rep-item { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--field); position: relative; }
+    .rep-item .row { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+    .rep-tools { display: flex; gap: 4px; justify-content: flex-end; }
+    .rep-tools button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 6px; }
+    .rep-tools button:hover { background: var(--line); color: var(--ink); }
+
+    .preview { position: sticky; top: 72px; align-self: start; display: grid; justify-items: center; gap: 10px; }
+    .phone { width: 390px; max-width: 100%; height: min(800px, calc(100dvh - 150px)); border-radius: 44px; border: 10px solid #111; background: #111; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,.5); }
+    .phone iframe { width: 100%; height: 100%; border: 0; border-radius: 34px; background: #fff; }
+    .preview-tools { display: flex; gap: 8px; }
+
+    .publish { border-color: var(--accent); }
+    pre.log { margin: 0; max-height: 200px; overflow: auto; padding: 10px; border-radius: 8px; background: var(--field); border: 1px solid var(--line); font-size: 12px; white-space: pre-wrap; }
+    .done { padding: 12px; border-radius: 10px; background: color-mix(in srgb, var(--ok) 12%, transparent); color: var(--ok); font-weight: 600; }
+    .done a { color: inherit; }
+    ol.steps { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+    .banner { max-width: 1240px; margin: 16px auto 0; padding: 12px 16px; border-radius: 10px; background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+    code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--field); padding: 1px 5px; border-radius: 5px; border: 1px solid var(--line); }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .preview { position: static; order: -1; }
+      .phone { height: 560px; }
+    }
+    @media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } .layout { padding: 12px; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="dot"></span>
+    <h1>GSA Connect · Card setup</h1>
+    <span class="status" id="status">Loading…</span>
+  </header>
+
+  <p class="banner" id="offline" hidden>
+    This editor needs the local helper. In your repo folder, run <code>npm run setup</code> (or <code>node scripts/dev.mjs --setup</code>), then open the link it prints.
+  </p>
+
+  <div class="layout" id="app" hidden>
+    <form id="form" autocomplete="on" onsubmit="return false">
+      <fieldset>
+        <legend>1 · You</legend>
+        <div class="media">
+          <div class="drop" id="photoDrop" tabindex="0" role="button" aria-label="Upload profile photo">
+            <span id="photoHint">Drop photo<br>or click</span>
+            <img id="photoImg" alt="" hidden>
+          </div>
+          <div class="filerow">
+            <input type="file" id="photoFile" accept="image/*" hidden>
+            <button type="button" class="btn small" id="photoPick">Upload photo</button>
+            <button type="button" class="btn small ghost" id="photoRemove" hidden>Remove</button>
+            <p class="hint" style="width:100%;margin:4px 0 0">Square crop, resized automatically. Also used on your Apple Wallet pass.</p>
+          </div>
+        </div>
+        <div class="grid2">
+          <label>Full name <input name="name" required placeholder="Jordan Dawgson"></label>
+          <label>Pronouns <span class="opt">optional</span><input name="pronouns" placeholder="they/them"></label>
+        </div>
+        <label>Title / position <input name="title" placeholder="Ph.D. Candidate, Plant Biology"></label>
+        <label>Headline <span class="opt">one sentence about your work</span><input name="headline" maxlength="140"></label>
+        <label>Bio <textarea name="bio" maxlength="900"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>2 · Affiliation</legend>
+        <div class="grid2">
+          <label>Department <input name="department"></label>
+          <label>Organization <input name="organization" placeholder="University of Georgia"></label>
+        </div>
+        <div class="grid2">
+          <label>GSA role <span class="opt">optional</span><input name="gsaRole" placeholder="GSA Senator · Franklin College"></label>
+          <label>Location <input name="location" placeholder="Athens, GA"></label>
+        </div>
+        <label>Office hours <span class="opt">optional</span><input name="officeHours" placeholder="Tue & Thu · 2–4 pm · Room 2502"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>3 · Contact & CV</legend>
+        <div class="grid2">
+          <label>Email <input name="email" type="email" placeholder="you@uga.edu"></label>
+          <label>Phone <span class="opt">optional</span><input name="phone" type="tel"></label>
+        </div>
+        <div class="grid2">
+          <label>Website <span class="opt">optional</span><input name="website" type="url" placeholder="https://"></label>
+          <label>Booking link <span class="opt">optional</span><input name="calendar" type="url" placeholder="Calendly / Google booking page"></label>
+        </div>
+        <div class="filerow">
+          <input type="file" id="cvFile" accept="application/pdf" hidden>
+          <button type="button" class="btn small" id="cvPick">Upload CV (PDF)</button>
+          <span class="filename" id="cvName"></span>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4 · Research</legend>
+        <label>Research interests <span class="opt">comma separated</span><input name="researchInterests" data-csv placeholder="Epigenomics, Root phenotyping"></label>
+        <div data-rep="publications"></div>
+        <div data-rep="projects"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>5 · Links</legend>
+        <div data-rep="links"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>6 · More <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(shown by templates that support it)</span></legend>
+        <div data-rep="education"></div>
+        <div data-rep="awards"></div>
+        <div data-rep="events"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>7 · Look</legend>
+        <div class="grid2">
+          <label>Accent colour <span class="opt">blank = template default</span>
+            <span style="display:flex;gap:8px"><input type="color" id="accentPick"><input name="theme.accent" placeholder="#BA0C2F"></span>
+          </label>
+          <label>Wallet pass colour <input name="wallet.backgroundColor" placeholder="#BA0C2F"></label>
+        </div>
+        <label>Custom domain URL <span class="opt">leave blank for GitHub Pages</span><input name="siteUrl" type="url" placeholder="https://card.yourname.com/"></label>
+      </fieldset>
+
+      <fieldset class="publish">
+        <legend>8 · Publish</legend>
+        <p class="hint">Your changes are already saved to <code>card.json</code>. Publishing commits them and pushes to GitHub, and the site redeploys in about a minute.</p>
+        <label>Commit message <input id="commitMsg" value="Update my GSA Connect card"></label>
+        <div class="filerow">
+          <button type="button" class="btn primary" id="publish">Publish to GitHub</button>
+        </div>
+        <div class="done" id="done" hidden></div>
+        <pre class="log" id="log" hidden></pre>
+        <ol class="steps">
+          <li>First time only: on GitHub, open <b>Settings → Pages</b> and set <b>Source = GitHub Actions</b>.</li>
+          <li>Wallet passes (Apple / Google / Samsung): see <code>docs/WALLET-SETUP.md</code>.</li>
+        </ol>
+      </fieldset>
+    </form>
+
+    <aside class="preview">
+      <div class="phone"><iframe id="preview" title="Live preview" src="index.html"></iframe></div>
+      <div class="preview-tools">
+        <a class="btn small" href="index.html" target="_blank">Open full preview ↗</a>
+        <button type="button" class="btn small" id="reload">Refresh</button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+  (() => {
+    const ICONS = ["link", "scholar", "orcid", "linkedin", "github", "research", "website", "social", "video", "book", "email", "phone", "calendar", "cv"];
+    const REPS = {
+      links: { title: "Links", add: "Add link", fields: [["label", "Label", "Google Scholar"], ["url", "URL", "https://", "url"], ["icon", "Icon", ICONS]] },
+      publications: { title: "Publications", add: "Add publication", fields: [["title", "Title"], ["authors", "Authors"], ["venue", "Journal / venue"], ["year", "Year", "2026", "number"], ["url", "DOI / link", "https://", "url"]] },
+      projects: { title: "Projects", add: "Add project", fields: [["title", "Name"], ["description", "One-line description"], ["url", "Link", "https://", "url"]] },
+      education: { title: "Education", add: "Add degree", fields: [["degree", "Degree"], ["school", "School"], ["years", "Years", "2023 – present"]] },
+      awards: { title: "Awards & honours", add: "Add award", fields: [["title", "Award"], ["year", "Year", "", "number"]] },
+      events: { title: "Upcoming events", add: "Add event", fields: [["title", "Event"], ["date", "Date", "Nov 4, 2026"], ["where", "Where"], ["url", "Link", "https://", "url"]] }
+    };
+
+    const $ = (s, r = document) => r.querySelector(s);
+    const status = $("#status");
+    const setStatus = (t, cls = "") => { status.textContent = t; status.className = "status " + cls; };
+    const get = (o, p) => p.split(".").reduce((a, k) => a?.[k], o);
+    const set = (o, p, v) => { const ks = p.split("."); const last = ks.pop(); ks.reduce((a, k) => (a[k] ??= {}), o)[last] = v; };
+    let card;
+
+    // ---------- load ----------
+    fetch("/api/card").then((r) => { if (!r.ok) throw 0; return r.json(); }).then((c) => {
+      card = c; $("#app").hidden = false; hydrate(); setStatus("All changes saved", "ok");
+    }).catch(() => { $("#offline").hidden = false; setStatus("Offline", "err"); });
+
+    function hydrate() {
+      for (const el of $("#form").querySelectorAll("[name]")) {
+        const v = get(card, el.name);
+        el.value = el.hasAttribute("data-csv") ? (v || []).join(", ") : v ?? "";
+        el.addEventListener("input", () => {
+          let val = el.value;
+          if (el.hasAttribute("data-csv")) val = val.split(",").map((s) => s.trim()).filter(Boolean);
+          set(card, el.name, val);
+          if (el.name === "theme.accent" && /^#[0-9a-f]{6}$/i.test(val)) $("#accentPick").value = val;
+          save();
+        });
+      }
+      const acc = get(card, "theme.accent");
+      if (/^#[0-9a-f]{6}$/i.test(acc || "")) $("#accentPick").value = acc;
+      $("#accentPick").addEventListener("input", (e) => {
+        const f = $('[name="theme.accent"]'); f.value = e.target.value; f.dispatchEvent(new Event("input"));
+      });
+      document.querySelectorAll("[data-rep]").forEach(renderRep);
+      showPhoto(card.photo);
+      $("#cvName").textContent = card.cv ? `Current: ${card.cv}` : "No CV yet";
+    }
+
+    // ---------- repeaters ----------
+    function renderRep(host) {
+      const key = host.dataset.rep, cfg = REPS[key];
+      card[key] ??= [];
+      host.innerHTML = `<label style="margin-bottom:6px">${cfg.title}</label><div class="rep"></div>
+        <button type="button" class="btn small" style="margin-top:8px">+ ${cfg.add}</button>`;
+      const list = $(".rep", host);
+      card[key].forEach((item, i) => list.appendChild(repItem(key, cfg, item, i, host)));
+      host.lastElementChild.onclick = () => { card[key].push({}); renderRep(host); save(); $(".rep-item:last-child input", host)?.focus(); };
+    }
+    function repItem(key, cfg, item, i, host) {
+      const div = document.createElement("div");
+      div.className = "rep-item";
+      div.innerHTML = `<div class="row">${cfg.fields.map(([f, label, ph, type]) => Array.isArray(ph)
+        ? `<label>${label}<select data-f="${f}">${ph.map((o) => `<option${o === item[f] ? " selected" : ""}>${o}</option>`).join("")}</select></label>`
+        : `<label>${label}<input data-f="${f}" type="${type || "text"}" placeholder="${ph || ""}"></label>`).join("")}</div>
+        <div class="rep-tools"><button type="button" data-a="up" title="Move up">↑</button><button type="button" data-a="down" title="Move down">↓</button><button type="button" data-a="del">Remove</button></div>`;
+      div.querySelectorAll("[data-f]").forEach((el) => {
+        if (el.tagName === "INPUT") el.value = item[el.dataset.f] ?? "";
+        el.addEventListener("input", () => {
+          const v = el.type === "number" && el.value ? Number(el.value) : el.value;
+          if (v === "") delete item[el.dataset.f]; else item[el.dataset.f] = v;
+          save();
+        });
+      });
+      div.querySelector(".rep-tools").onclick = (e) => {
+        const a = e.target.dataset.a; if (!a) return;
+        const arr = card[key];
+        if (a === "del") arr.splice(i, 1);
+        if (a === "up" && i > 0) [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]];
+        if (a === "down" && i < arr.length - 1) [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]];
+        renderRep(host); save();
+      };
+      return div;
+    }
+
+    // ---------- save ----------
+    let timer;
+    function save() {
+      setStatus("Saving…"); clearTimeout(timer);
+      timer = setTimeout(async () => {
+        const clean = structuredClone(card);
+        for (const k of Object.keys(REPS)) clean[k] = (clean[k] || []).filter((o) => Object.values(o).some((v) => v !== "" && v != null));
+        try {
+          const r = await fetch("/api/card", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(clean) });
+          if (!r.ok) throw new Error((await r.json()).error);
+          setStatus("All changes saved", "ok"); reloadPreview();
+        } catch (e) { setStatus("Save failed: " + e.message, "err"); }
+      }, 500);
+    }
+    function reloadPreview() { const f = $("#preview"); f.src = "index.html?t=" + Date.now(); }
+    $("#reload").onclick = reloadPreview;
+
+    async function upload(kind, ext, blob) {
+      const r = await fetch(`/api/upload?kind=${kind}&ext=${ext}`, { method: "POST", body: blob });
+      const j = await r.json(); if (!r.ok) throw new Error(j.error); return j.path;
+    }
+
+    // ---------- photo ----------
+    function showPhoto(src) {
+      const img = $("#photoImg");
+      img.hidden = !src; $("#photoHint").hidden = !!src; $("#photoRemove").hidden = !src;
+      if (src) img.src = src + "?t=" + Date.now();
+    }
+    function squareBlob(img, size, type, q) {
+      const c = document.createElement("canvas"); c.width = c.height = size;
+      const s = Math.min(img.naturalWidth, img.naturalHeight);
+      c.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+      return new Promise((ok) => c.toBlob(ok, type, q));
+    }
+    async function handlePhoto(file) {
+      if (!file || !file.type.startsWith("image/")) return setStatus("Please choose an image file", "err");
+      setStatus("Uploading photo…");
+      try {
+        const img = new Image(); img.src = URL.createObjectURL(file); await img.decode();
+        const path = await upload("photo", "jpg", await squareBlob(img, 800, "image/jpeg", 0.86));
+        await upload("thumb", "png", await squareBlob(img, 270, "image/png"));
+        card.photo = path; showPhoto(path); save();
+      } catch (e) { setStatus("Photo upload failed: " + e.message, "err"); }
+    }
+    const drop = $("#photoDrop");
+    $("#photoPick").onclick = drop.onclick = () => $("#photoFile").click();
+    drop.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#photoFile").click(); } };
+    $("#photoFile").onchange = (e) => handlePhoto(e.target.files[0]);
+    drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
+    drop.ondragleave = () => drop.classList.remove("over");
+    drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); handlePhoto(e.dataTransfer.files[0]); };
+    $("#photoRemove").onclick = () => { card.photo = ""; showPhoto(""); save(); };
+
+    // ---------- CV ----------
+    $("#cvPick").onclick = () => $("#cvFile").click();
+    $("#cvFile").onchange = async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      if (f.type !== "application/pdf") return setStatus("CV must be a PDF", "err");
+      setStatus("Uploading CV…");
+      try { card.cv = await upload("cv", "pdf", f); $("#cvName").textContent = `✓ ${f.name}`; save(); }
+      catch (err) { setStatus("CV upload failed: " + err.message, "err"); }
+    };
+
+    // ---------- publish ----------
+    $("#publish").onclick = async () => {
+      const btn = $("#publish"); btn.disabled = true; btn.textContent = "Publishing…";
+      $("#done").hidden = true; $("#log").hidden = true;
+      try {
+        const r = await fetch("/api/publish", { method: "POST", body: JSON.stringify({ message: $("#commitMsg").value }) });
+        const j = await r.json(); if (!r.ok) throw new Error(j.error);
+        $("#log").textContent = j.log; $("#log").hidden = false;
+        $("#done").innerHTML = j.pages ? `Published ✓ Your card will be live in about a minute at <a href="${j.pages}" target="_blank">${j.pages}</a>` : "Saved ✓";
+        $("#done").hidden = false;
+      } catch (e) {
+        $("#log").textContent = "Publish failed:\n" + e.message + "\n\nYou can always publish manually:\n  git add -A && git commit -m \"Update card\" && git push";
+        $("#log").hidden = false;
+      }
+      btn.disabled = false; btn.textContent = "Publish to GitHub";
+    };
+  })();
+  </script>
+</body>
+</html>
