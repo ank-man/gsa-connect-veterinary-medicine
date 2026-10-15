@@ -6,12 +6,14 @@
 //   GET  /api/card                 read card.json
 //   POST /api/card                 save card.json
 //   POST /api/upload?kind=photo|thumb|cv&ext=jpg   save an uploaded file into assets/
+//   GET  /api/templates            list templates;  POST /api/template {id}  switch template
 //   POST /api/publish              git add + commit + push
 import { createServer } from "node:http";
 import { readFile, writeFile, stat, readdir, unlink } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { extname, join, resolve } from "node:path";
 import { promisify } from "node:util";
+import { applyTemplate, currentTemplate, loadCatalog } from "./template.mjs";
 
 const run = promisify(execFile);
 const args = process.argv.slice(2);
@@ -46,6 +48,20 @@ async function api(req, res, url) {
     if (!card || typeof card.name !== "string") throw new Error("card.json needs a name");
     await writeFile(cardPath, JSON.stringify(card, null, 2) + "\n");
     return json(res, 200, { ok: true });
+  }
+  if (url.pathname === "/api/templates" && req.method === "GET") {
+    const c = await loadCatalog(repo);
+    return json(res, 200, { current: await currentTemplate(repo), previewBase: c.previewBase,
+      themes: c.themes.map(({ id, name, group, layout, tagline, bestFor, accent }) => ({ id, name, group, layout, tagline, bestFor, accent })) });
+  }
+  if (url.pathname === "/api/template" && req.method === "POST") {
+    const { id } = JSON.parse((await body(req)).toString("utf8"));
+    const t = await applyTemplate({ root: repo, id });
+    const card = JSON.parse(await readFile(cardPath, "utf8"));
+    card.template = t.id;
+    card.wallet = { ...card.wallet, ...(t.wallet || {}) };
+    await writeFile(cardPath, JSON.stringify(card, null, 2) + "\n");
+    return json(res, 200, { ok: true, id: t.id, name: t.name, wallet: card.wallet });
   }
   if (url.pathname === "/api/upload" && req.method === "POST") {
     const kind = url.searchParams.get("kind");

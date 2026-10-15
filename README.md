@@ -28,6 +28,7 @@ npm run setup
 
 A form opens in your browser with a **live phone preview**:
 
+- 🎨 **choose your template**: all 51 designs (by field: STEM, plants & insects, health, law, humanities, arts…); switching keeps your details
 - 📸 drag in your photo (auto-cropped and resized; also used on your Apple Wallet pass)
 - 📄 upload your CV (PDF)
 - ✍️ fill in your name, title, research, publications, links, office hours…
@@ -40,6 +41,16 @@ First time only: on GitHub, open **Settings → Pages** and set **Source = GitHu
 upload `assets/cv.pdf` (and optionally `assets/photo.jpg`), commit, then enable Pages as above.
 
 > Tip: name the repo `<username>.github.io` to get the shortest URL.
+
+### Switching templates later
+
+This repo contains **every** GSA Connect template, so you're never locked into the one you cloned:
+
+- in the setup form: click a design under **Template**
+- on GitHub: change `"template": "veterinary-medicine"` in `card.json` (e.g. `"law"`, `"entomology"`, `"music"`) and commit; the build applies it
+- in a terminal: `npm run template -- --list`, then `npm run template -- <id>`
+
+Browse them all at https://ank-man.github.io/gsa-connect-kit/
 
 ## 2 · Preview locally
 
@@ -76,6 +87,7 @@ See **[docs/NFC-AND-PRINT.md](docs/NFC-AND-PRINT.md)**.
 
 | Field | Used for |
 |---|---|
+| `template` | Which design to use (`--list` to see all 51) |
 | `name`, `pronouns`, `title`, `headline`, `bio` | Header & about |
 | `department`, `organization`, `gsaRole`, `location` | Affiliation lines and GSA badge |
 | `email`, `phone`, `website`, `calendar`, `cv` | Buttons + vCard |

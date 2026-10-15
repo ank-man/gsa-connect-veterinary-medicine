@@ -12,6 +12,7 @@ import { buildApple } from "./wallet-apple.mjs";
 import { buildGoogle } from "./wallet-google.mjs";
 import { buildSamsung } from "./wallet-samsung.mjs";
 import { toVCard } from "./vcard.mjs";
+import { applyTemplate, currentTemplate } from "./template.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const dist = resolve(root, "dist");
@@ -27,6 +28,11 @@ await mkdir(resolve(dist, "wallet"), { recursive: true });
 
 for (const f of ["index.html", "nfc.html", "card.json", "manifest.webmanifest", ".nojekyll", "favicon.svg", "css", "js", "assets"]) {
   if (await exists(resolve(root, f))) await cp(resolve(root, f), resolve(dist, f), { recursive: true });
+}
+// "template" in card.json wins when it differs from what's applied in the repo (e.g. edited on GitHub).
+if (card.template && card.template !== (await currentTemplate(root)) && (await exists(resolve(root, "templates/catalog.json")))) {
+  const t = await applyTemplate({ root, dest: dist, id: card.template });
+  console.log(`✓ template → ${t.name}`);
 }
 // Bake the resolved URL into the deployed card.json so QR codes / shares use the canonical link.
 await writeFile(resolve(dist, "card.json"), JSON.stringify(card, null, 2));
